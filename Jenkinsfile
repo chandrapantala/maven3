@@ -3,55 +3,41 @@ pipeline
     agent any
     stages
     {
-        stage('ContinuousDownload')
+        stage('contdow')
         {
             steps
             {
                 git 'https://github.com/intelliqittrainings/maven.git'
             }
         }
-        stage('ContinuousBuild')
+        stage('contbuild')
         {
             steps
             {
                 sh 'mvn package'
             }
         }
-        stage('ContinuousDeployment')
+        stage('contdepoly')
         {
             steps
             {
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.51.212:9090')], contextPath: 'test1', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: '940cfe09-3905-4644-be26-658311726026', path: '', url: 'http://172.31.7.4:8080')], contextPath: 'test11', war: '**/*.war'
             }
         }
-        stage('ContinuousTesting')
+        stage('conttest')
         {
             steps
             {
-               git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-               sh 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline1/testing.jar'
+                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+                sh 'java -jar /var/lib/jenkins/workspace/dcl1@2/testing.jar'
             }
         }
-       
-    }
-    
-    post
-    {
-        success
+        stage('contdel')
         {
-            input message: 'Need approval from the DM!', submitter: 'srinivas'
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.50.204:9090')], contextPath: 'prod1', war: '**/*.war'
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: '93979f6a-0609-4aec-a5c4-bae15886e608', path: '', url: 'http://172.31.14.232:8080')], contextPath: 'prod11', war: '**/*.war'
+            }
         }
-        failure
-        {
-            mail bcc: '', body: 'Continuous Integration has failed', cc: '', from: '', replyTo: '', subject: 'CI Failed', to: 'selenium.saikrishna@gmail.com'
-        }
-       
     }
-    
-    
-    
-    
-    
-    
 }
